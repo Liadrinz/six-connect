@@ -7,13 +7,15 @@
         </div>
         <div class="play board">
             <div v-for="(i, idx) in range(x)" :key="idx">
-                <div class="cell cross" v-for="(j, jdx) in range(y)" :key="jdx" @click="take(i, j, personColor)"><span class="piece">{{getPiece(i, j)}}</span></div>
+                <div class="cell cross" v-for="(j, jdx) in range(y)" :key="jdx" @click="take(i, j, 1)"><span class="piece">{{getPiece(i, j)}}</span></div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import takeAlgorithm from '@/algorithm';
+
 export default {
     name: 'Chessboard',
     props: {
@@ -41,17 +43,17 @@ export default {
             for (let i = 0; i < this.x; ++i) {
                 let row = [];
                 for (let j = 0; j < this.y; ++j) {
-                    row.push('');
+                    row.push(-1);
                 }
                 this.boardData.push(row);
             }
             if (!this.canTake) this.machineTake();
         },
         // 构建传入父组件的数据
-        createEventData(i, j, color) {
+        createEventData(i, j, role) {
             return {
                 board: this.boardData,
-                change: [i, j, color]
+                change: [i, j, role]
             }
         },
         // 棋盘变化时调用父组件传入的回调函数并回传数据
@@ -65,31 +67,18 @@ export default {
         getPiece(i, j) {
             return this.boardData[i][j];
         },
-        getRandomPos() {
-            let rand = max => parseInt(Math.random() * max);
-            return [rand(this.x), rand(this.y)];
-        },
         // 机器下棋的方法
         machineTake() {
-            let rx, ry;
-            do {
-                [rx, ry] = this.getRandomPos();
-            } while (this.boardData[rx][ry] != '');
-            this.take(rx, ry, this.machineColor);
+            let [rx, ry] = takeAlgorithm(this.boardData);
+            this.take(rx, ry, 0);
             this.canTake = true;
         },
         // UI层的下棋方法
-        take(i, j, color) {
-            if (this.personColor == this.machineColor) {
-                console.warn("person-color changed dynamically, this may result in a game against the rule!");
-                this.init();
-                this.machineColor = 1 - this.personColor;
-                return;
-            }
-            if (this.canTake || color == this.machineColor) {
-                this.$set(this.boardData[i], j, this.getPiece(i, j) == '' ? this.colorToPiece[color] : '');
-                this.canTake = false;
-                if (color == this.personColor) {
+        take(i, j, role) {
+            if (this.canTake || role == 0) {
+                this.$set(this.boardData[i], j, role);
+                if (role == 1) {
+                    this.canTake = false;
                     setTimeout(this.machineTake, 300)
                 }
                 this.callbackOnChange();
