@@ -4,7 +4,7 @@ from evaluate import evaluate, judge
 
 INFINITY = 0xffffffff
 
-class Game:
+class Model:
 
     def __init__(self, board=None):
         if board is None:
@@ -42,7 +42,7 @@ class Game:
     def __repr__(self):
         return self.__str__()
 
-class ABGame(Game):
+class ABModel(Model):
     
     def __init__(self, board=None):
         super().__init__(board=board)
@@ -72,42 +72,6 @@ class ABGame(Game):
             self.best_move = best_move
         return a
         
-    def start(self, depth, side):
+    def search(self, depth, side):
         begin = 0 if side == 'black' else 1
         return self.oab(depth, -INFINITY, INFINITY, begin)
-    
-    def min(self, depth, a, b):
-        val, moves = evaluate(self.board)
-        self.no_move = (len(moves) == 0)
-        if depth <= 0:
-            return val
-        for move in moves:
-            self.take(*move, 'white')
-            if self.side == 'white':
-                self.best_move = move
-            val = self.max(depth - 1, b, a)
-            self.untake(*move, 'white')
-            if val < b:
-                return b
-            if val < a:
-                a = val
-        return a
-
-
-    def max(self, depth, a, b):
-        val, moves = evaluate(self.board)
-        self.no_move = (len(moves) == 0)
-        if depth <= 0:
-            return val
-        for move in moves:
-            self.take(*move, 'black')
-            if self.side == 'black':
-                self.best_move = move
-            val = self.min(depth - 1, b, a)
-            self.untake(*move, 'black')
-            if val > b:
-                return b
-            if val > a:
-                a = val
-        return a
-
