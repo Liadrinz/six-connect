@@ -22,10 +22,7 @@ class Model:
             self.board[x, y] = 1
 
     def untake(self, x, y, side):
-        if side == 'white':
-            self.board[x, y] = 0
-        else:
-            self.board[x, y] = 0
+        self.board[x, y] = 0
     
     def judge(self):
         return judge(self.board)
