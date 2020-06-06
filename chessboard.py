@@ -1,6 +1,5 @@
 import pygame
 import os
-import numpy as np
 
 class Chessboard(object):
     base_folder = os.path.dirname(__file__)
