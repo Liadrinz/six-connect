@@ -11,6 +11,7 @@ class Chessboard(object):
         self.height = height
         self.width = width
         self.grid_width = self.width // 20
+        self.moves = []
 
 
     def draw_board(self,screen):
@@ -43,5 +44,15 @@ class Chessboard(object):
         for cc in circle_center:
             pygame.draw.circle(screen, pygame.Color("BLACK"), cc, 5)
 
+    def draw_coin(self,side,position,screen):
+        self.moves.append((position,side))
+        for m in self.moves:
+            pos = self.invertPosition(m[0])
+            pygame.draw.circle(screen,pygame.Color(m[1]),pos,16)
         
-        
+
+    #转换位置变为UI中的坐标   
+    def invertPosition(self,position):
+        x = (position[0]+1)*self.grid_width
+        y = (position[1]+1)*self.grid_width
+        return (x,y)

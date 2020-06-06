@@ -19,15 +19,21 @@ clock = pygame.time.Clock()
 chessboard = Chessboard(WINDOW_WIDTH,WINDOW_HEIGHT)
 
 running = True
+
+chessboard.draw_board(screen)
+
 while running:
     clock.tick(FPS)
+     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type ==pygame.MOUSEBUTTONDOWN:
             pos = event.pos
-            grid = (int(round(event.pos[0] / (GRID_WIDTH + .0))),int(round(event.pos[1] / (GRID_WIDTH + .0))))
+            grid = (int(round(event.pos[0] / (GRID_WIDTH + .0))-1),int(round(event.pos[1] / (GRID_WIDTH + .0))-1))
+            print(grid)
+            chessboard.draw_coin("BLACK",grid,screen)
 
-    chessboard.draw_board(screen)   
+      
 
-    pygame.display.flip()
+    pygame.display.update()
