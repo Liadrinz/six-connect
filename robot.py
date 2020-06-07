@@ -45,11 +45,11 @@ class Robot:
             return None
         return self.model.best_move
 
-    def make_move(self, movement):
+    def make_move(self, movement,side):
         '''
-        让机器人走一步棋
+        让一方走一步棋
         - 入参
             - movement: 二元组, 下棋的坐标
         '''
-        self.model.take(*movement, self.side)
+        self.model.take(*movement, side)
     

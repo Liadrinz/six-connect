@@ -23,13 +23,13 @@ class Chessboard(object):
             (self.width - self.grid_width, self.height - self.grid_width)),]
 
         for line in rec_lines:
-            pygame.draw.line(screen,pygame.Color("BLACK"),line[0],line[1],2)
+            pygame.draw.line(screen,pygame.Color("black"),line[0],line[1],2)
 
         for i in range(17):
-            pygame.draw.line(screen, pygame.Color("BLACK"),
+            pygame.draw.line(screen, pygame.Color("black"),
                          (self.grid_width * (2 + i), self.grid_width),
                          (self.grid_width * (2 + i), self.height - self.grid_width))
-            pygame.draw.line(screen, pygame.Color("BLACK"),
+            pygame.draw.line(screen, pygame.Color("black"),
                          (self.grid_width, self.grid_width * (2 + i)),
                          (self.height - self.grid_width, self.grid_width * (2 + i)))
 
@@ -41,7 +41,7 @@ class Chessboard(object):
         (self.grid_width * 10, self.grid_width * 10)]
 
         for cc in circle_center:
-            pygame.draw.circle(screen, pygame.Color("BLACK"), cc, 5)
+            pygame.draw.circle(screen, pygame.Color("black"), cc, 5)
 
     def draw_coin(self,side,position,screen):
         self.moves.append((position,side))
@@ -55,3 +55,5 @@ class Chessboard(object):
         x = (position[0]+1)*self.grid_width
         y = (position[1]+1)*self.grid_width
         return (x,y)
+
+    

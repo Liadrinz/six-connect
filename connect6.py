@@ -1,6 +1,8 @@
 import pygame
 import os
 from chessboard import Chessboard 
+from robot import Robot
+import time
 
 WINDOW_WIDTH,WINDOW_HEIGHT = 720,720
 GRID_WIDTH = WINDOW_WIDTH//20
@@ -25,11 +27,11 @@ white_side = pygame.image.load(os.path.join(img_folder,'white.png')).convert()
 goback = pygame.image.load(os.path.join(img_folder,'goback.png')).convert()
 title = pygame.image.load(os.path.join(img_folder,'title.png')).convert()
 
+
 clock = pygame.time.Clock()
-chessboard = Chessboard(WINDOW_WIDTH,WINDOW_HEIGHT)
 ingame = True
 while ingame:
-    screen.fill(pygame.Color("WHITE"))
+    screen.fill(pygame.Color("white"))
     screen.blit(menu_bg,(200,150))
     screen.blit(pve,(200,400))
     screen.blit(eve,(200,500))
@@ -38,6 +40,8 @@ while ingame:
     in_menu = True
     pve_chosed = False
     running = False
+    player_side = ""
+    robot_side = ""
     while in_menu:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -49,7 +53,7 @@ while ingame:
                 if 200<pos[0]<408 and 400<pos[1]<450:
                     if pve_chosed == False:
                         pve_chosed = True
-                        screen.fill(pygame.Color("WHITE"))
+                        screen.fill(pygame.Color("white"))
                         screen.blit(menu_bg,(200,150))
                         screen.blit(black_side,(200,400))
                         screen.blit(white_side,(200,500))
@@ -59,6 +63,8 @@ while ingame:
                         print("黑棋")
                         running = True
                         in_menu = False
+                        player_side = "black"
+                        robot_side = "white"
                 elif 200<pos[0]<408 and 500<pos[1]<550:
                     if pve_chosed == False:
                         print("AI对弈")
@@ -68,9 +74,11 @@ while ingame:
                         print("白棋")
                         running = True
                         in_menu = False
+                        player_side = "white"
+                        robot_side = "black"
                 if 200<pos[0]<408 and 600<pos[1]<650 and pve_chosed == True:
                     pve_chosed = False
-                    screen.fill(pygame.Color("WHITE"))
+                    screen.fill(pygame.Color("white"))
                     screen.blit(menu_bg,(200,150))
                     screen.blit(pve,(200,400))
                     screen.blit(eve,(200,500))
@@ -80,11 +88,21 @@ while ingame:
 
 
     if running == True:
+        chessboard = Chessboard(WINDOW_WIDTH,WINDOW_HEIGHT)
         chessboard.draw_board(screen)
-
+        if pve_chosed == True: 
+            robot = Robot()
+            robot.start()
+            robot.set_param(robot_side)
+            if robot_side == "black":
+                robot_step = robot.query(robot.model.board)
+                robot.make_move(robot_step,robot_side)
+                chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
+                pygame.display.update()
+        
+    step = 0
     while running:
         clock.tick(FPS)
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 ingame = False
@@ -92,8 +110,23 @@ while ingame:
             elif event.type ==pygame.MOUSEBUTTONDOWN:
                 pos = event.pos
                 grid = (int(round(event.pos[0] / (GRID_WIDTH + .0))-1),int(round(event.pos[1] / (GRID_WIDTH + .0))-1))
-                chessboard.draw_coin("BLACK",grid,screen)
+                if robot.model.board[grid[1],grid[0]]==0:
+                    step = step+1
+                    robot.make_move((grid[1],grid[0]),player_side)
+                    chessboard.draw_coin(player_side,grid,screen)
+                    pygame.display.update()
+                    if step == 2:
+                        step = 0
+                        robot_step = robot.query(robot.model.board)
+                        robot.make_move(robot_step,robot_side)
+                        chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
+                        pygame.display.update()
+                        robot_step = robot.query(robot.model.board)
+                        robot.make_move(robot_step,robot_side)
+                        chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
+                        pygame.display.update()
+                
 
         
 
-        pygame.display.update()
+        
