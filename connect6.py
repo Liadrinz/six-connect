@@ -42,6 +42,7 @@ while ingame:
     running = False
     player_side = ""
     robot_side = ""
+    first_step = True
     while in_menu:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -76,6 +77,7 @@ while ingame:
                         in_menu = False
                         player_side = "white"
                         robot_side = "black"
+                        first_step = False
                 if 200<pos[0]<408 and 600<pos[1]<650 and pve_chosed == True:
                     pve_chosed = False
                     screen.fill(pygame.Color("white"))
@@ -103,28 +105,43 @@ while ingame:
     step = 0
     while running:
         clock.tick(FPS)
+        if robot.judge(robot.model.board)!=None:
+            result = robot.judge(robot.model.board)
+            chessboard.draw_text(screen,result,50,360,300)
+            break
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 ingame = False
                 running = False
-            elif event.type ==pygame.MOUSEBUTTONDOWN and step!=2:
+            elif event.type ==pygame.MOUSEBUTTONDOWN and first_step==True:
+                first_step = False
+                pygame.event.set_blocked(None)
                 pos = event.pos
-                grid = (int(round(event.pos[0] / (GRID_WIDTH + .0))-1),int(round(event.pos[1] / (GRID_WIDTH + .0))-1))
-                if robot.model.board[grid[1],grid[0]]==0:
-                    step = step+1
-                    robot.make_move((grid[1],grid[0]),player_side)
-                    chessboard.draw_coin(player_side,grid,screen)
-                    pygame.display.update()
-                    if step == 2:
-                        robot_step = robot.query(robot.model.board)
-                        robot.make_move(robot_step,robot_side)
-                        chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
-                        pygame.display.update()
-                        robot_step = robot.query(robot.model.board)
-                        robot.make_move(robot_step,robot_side)
-                        chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
-                        pygame.display.update()
-                        step = 0
+                chessboard.make_move(pos,robot,step,player_side,screen)
+                chessboard.robot_move(robot,robot_side,screen)
+                chessboard.robot_move(robot,robot_side,screen)
+                pygame.event.set_allowed(None)
+            elif event.type ==pygame.MOUSEBUTTONDOWN and step!=2:
+                pygame.event.set_blocked(None)
+                pos = event.pos
+                step = chessboard.make_move(pos,robot,step,player_side,screen)
+                    # if robot.judge(robot.model.board)!=None:
+                    #     result = robot.judge(robot.model.board)
+                    #     chessboard.draw_text(screen,result,2,300,300)
+                    #     break
+                if step == 2:
+                    chessboard.robot_move(robot,robot_side,screen)
+                    # if robot.judge(robot.model.board)!=None:
+                    #     result = robot.judge(robot.model.board)
+                    #     chessboard.draw_text(screen,result,2,300,300)
+                    #     break
+                    chessboard.robot_move(robot,robot_side,screen)
+                    # if robot.judge(robot.model.board)!=None:
+                    #     result = robot.judge(robot.model.board)
+                    #     chessboard.draw_text(screen,result,2,300,300)
+                    #     break
+                    step = 0
+                pygame.event.set_allowed(None)
                 
 
         
