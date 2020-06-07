@@ -98,7 +98,7 @@ while ingame:
                 robot_step = robot.query(robot.model.board)
                 robot.make_move(robot_step,robot_side)
                 chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
-                pygame.display.update()
+        pygame.display.update()
         
     step = 0
     while running:
@@ -107,7 +107,7 @@ while ingame:
             if event.type == pygame.QUIT:
                 ingame = False
                 running = False
-            elif event.type ==pygame.MOUSEBUTTONDOWN:
+            elif event.type ==pygame.MOUSEBUTTONDOWN and step!=2:
                 pos = event.pos
                 grid = (int(round(event.pos[0] / (GRID_WIDTH + .0))-1),int(round(event.pos[1] / (GRID_WIDTH + .0))-1))
                 if robot.model.board[grid[1],grid[0]]==0:
@@ -116,15 +116,15 @@ while ingame:
                     chessboard.draw_coin(player_side,grid,screen)
                     pygame.display.update()
                     if step == 2:
+                        robot_step = robot.query(robot.model.board)
+                        robot.make_move(robot_step,robot_side)
+                        chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
+                        pygame.display.update()
+                        robot_step = robot.query(robot.model.board)
+                        robot.make_move(robot_step,robot_side)
+                        chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
+                        pygame.display.update()
                         step = 0
-                        robot_step = robot.query(robot.model.board)
-                        robot.make_move(robot_step,robot_side)
-                        chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
-                        pygame.display.update()
-                        robot_step = robot.query(robot.model.board)
-                        robot.make_move(robot_step,robot_side)
-                        chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
-                        pygame.display.update()
                 
 
         
