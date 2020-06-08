@@ -31,7 +31,6 @@ title = pygame.image.load(os.path.join(img_folder,'title.png')).convert()
 lock=threading.Lock()
 def robot_moves_pve():
     global tie
-    count = count +1
     pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
     tie = chessboard.robot_move(robot,robot_side,screen)
     tie = chessboard.robot_move(robot,robot_side,screen)
