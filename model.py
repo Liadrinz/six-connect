@@ -46,11 +46,7 @@ class ABModel(Model):
         self.best_move = None
 
     def oab(self, depth, a, b, begin=0, top=True):
-        if begin == 0:
-            side = 'black'
-        else:
-            side = 'white' if (begin - 1) // 2 % 2 == 0 else 'black'
-        # side = 'white' if begin else 'black'
+        side = 'white' if begin == 0 else 'black'
         val, moves = evaluate(self.board)
         best_move = None
         if depth == 0:
@@ -62,7 +58,7 @@ class ABModel(Model):
             return val
         for move in moves:
             self.take(*move, side)
-            v = -self.oab(depth - 1, -b, -a, begin + 1, False)
+            v = -self.oab(depth - 1, -b, -a, 1-begin, False)
             self.untake(*move, side)
             if v >= b:
                 return b
@@ -74,5 +70,5 @@ class ABModel(Model):
         return a
         
     def search(self, depth, side):
-        begin = 0 if side == 'black' else 1
-        return self.oab(depth, -INFINITY, INFINITY, begin)
+        # begin = 0 if side == 'black' else 1
+        return self.oab(depth, -INFINITY, INFINITY, 0)
