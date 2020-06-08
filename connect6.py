@@ -45,6 +45,8 @@ while ingame:
     robot1_side = "black"
     robot2_side = "white"
     first_step = True
+    tie = False
+    gameover = False
     while in_menu:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -113,14 +115,20 @@ while ingame:
     #人机对弈游戏循环
     while running and pve_chosed:
         clock.tick(FPS)
+        if step == 2 and gameover == False:
+            tie = chessboard.robot_move(robot,robot_side,screen)
+            tie = chessboard.robot_move(robot,robot_side,screen)
+            step=0
+        if tie == True:
+            chessboard.draw_text(screen,"和棋！",50,360,300)
+            gameover = True
         if robot.judge(robot.model.board)!=None:
             result = robot.judge(robot.model.board)
-            chessboard.draw_text(screen,result,50,360,300)
-            break
-        if step == 2:
-            chessboard.robot_move(robot,robot_side,screen)
-            chessboard.robot_move(robot,robot_side,screen)
-            step=0
+            gameover =True
+            if result=="black":
+                chessboard.draw_text(screen,"黑棋胜！",50,360,300)
+            else:
+                chessboard.draw_text(screen,"白棋胜！",50,360,300)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -133,7 +141,7 @@ while ingame:
                     chessboard.robot_move(robot,robot_side,screen)
                     chessboard.robot_move(robot,robot_side,screen)
                 pygame.event.set_allowed(None)
-            elif event.type ==pygame.MOUSEBUTTONDOWN and step!=2:
+            elif event.type ==pygame.MOUSEBUTTONDOWN and step!=2 and gameover == False:
                 pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
                 pos = event.pos
                 if GRID_WIDTH<=pos[0]<=WINDOW_WIDTH-GRID_WIDTH and GRID_WIDTH<=pos[1]<=WINDOW_HEIGHT-GRID_WIDTH:
@@ -142,17 +150,24 @@ while ingame:
     #AI对弈游戏循环   
     while running and pve_chosed == False:
         clock.tick(FPS)
+        if tie == True:
+            gameover = True
+            chessboard.draw_text(screen,"和棋！",50,360,300)
         if robot.judge(robot.model.board)!=None:
+            gameover = True
             result = robot.judge(robot.model.board)
-            chessboard.draw_text(screen,result,50,360,300)
-            running = False
+            if result=="black":
+                chessboard.draw_text(screen,"黑棋胜！",50,360,300)
+            else:
+                chessboard.draw_text(screen,"白棋胜！",50,360,300)
+        if gameover == False:
+            tie = chessboard.robot_move(robot,robot2_side,screen)
+            time.sleep(0.5)
+            tie = chessboard.robot_move(robot,robot2_side,screen)
 
-            break
-        chessboard.robot_move(robot,robot2_side,screen)
-        chessboard.robot_move(robot,robot2_side,screen)
-
-        chessboard.robot_move(robot,robot1_side,screen)
-        chessboard.robot_move(robot,robot1_side,screen)
+            tie = chessboard.robot_move(robot,robot1_side,screen)
+            time.sleep(0.5)
+            tie = chessboard.robot_move(robot,robot1_side,screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
