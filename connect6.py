@@ -29,13 +29,15 @@ goback = pygame.image.load(os.path.join(img_folder,'goback.png')).convert()
 title = pygame.image.load(os.path.join(img_folder,'title.png')).convert()
 
 lock=threading.Lock()
-def robot_moves_pve(tie):
+def robot_moves_pve():
+    global tie
     pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
     tie = chessboard.robot_move(robot,robot_side,screen)
     tie = chessboard.robot_move(robot,robot_side,screen)
     pygame.event.set_allowed(None)
 
-def robot_moves_eve(tie):
+def robot_moves_eve():
+    global tie
     lock.acquire()
     tie = chessboard.robot_move(robot,robot2_side,screen)
     time.sleep(0.5)
@@ -137,7 +139,7 @@ while ingame:
     while running and pve_chosed:
         clock.tick(FPS)
         if step == 2 and gameover == False:
-            th = threading.Thread(target=robot_moves_pve,args=(tie,))
+            th = threading.Thread(target=robot_moves_pve,args=())
             th.setDaemon(True)
             th.start()
             step=0
@@ -184,7 +186,7 @@ while ingame:
             else:
                 chessboard.draw_text(screen,"白棋胜！",50,360,300)
         if gameover == False:
-            th = threading.Thread(target=robot_moves_eve,args=(tie,))
+            th = threading.Thread(target=robot_moves_eve,args=())
             th.setDaemon(True)
             th.start()
             time.sleep(2.3)
