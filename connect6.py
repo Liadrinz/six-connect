@@ -3,6 +3,7 @@ import os
 from chessboard import Chessboard 
 from robot import Robot
 import time
+import threading
 
 WINDOW_WIDTH,WINDOW_HEIGHT = 720,720
 GRID_WIDTH = WINDOW_WIDTH//20
@@ -26,6 +27,26 @@ black_side = pygame.image.load(os.path.join(img_folder,'black.png')).convert()
 white_side = pygame.image.load(os.path.join(img_folder,'white.png')).convert()
 goback = pygame.image.load(os.path.join(img_folder,'goback.png')).convert()
 title = pygame.image.load(os.path.join(img_folder,'title.png')).convert()
+
+lock=threading.Lock()
+def robot_moves_pve(tie):
+    pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
+    tie = chessboard.robot_move(robot,robot_side,screen)
+    tie = chessboard.robot_move(robot,robot_side,screen)
+    pygame.event.set_allowed(None)
+
+def robot_moves_eve(tie):
+    lock.acquire()
+    tie = chessboard.robot_move(robot,robot2_side,screen)
+    time.sleep(0.5)
+    tie = chessboard.robot_move(robot,robot2_side,screen)
+    time.sleep(0.5)
+    tie = chessboard.robot_move(robot,robot1_side,screen)
+    time.sleep(0.5)
+    tie = chessboard.robot_move(robot,robot1_side,screen)
+    time.sleep(0.5)
+    lock.release()
+
 
 
 clock = pygame.time.Clock()
@@ -116,8 +137,9 @@ while ingame:
     while running and pve_chosed:
         clock.tick(FPS)
         if step == 2 and gameover == False:
-            tie = chessboard.robot_move(robot,robot_side,screen)
-            tie = chessboard.robot_move(robot,robot_side,screen)
+            th = threading.Thread(target=robot_moves_pve,args=(tie,))
+            th.setDaemon(True)
+            th.start()
             step=0
         if tie == True:
             chessboard.draw_text(screen,"和棋！",50,360,300)
@@ -148,6 +170,7 @@ while ingame:
                     step = chessboard.make_move(pos,robot,step,player_side,screen)
                 pygame.event.set_allowed(None)
     #AI对弈游戏循环   
+    count = 0
     while running and pve_chosed == False:
         clock.tick(FPS)
         if tie == True:
@@ -161,16 +184,11 @@ while ingame:
             else:
                 chessboard.draw_text(screen,"白棋胜！",50,360,300)
         if gameover == False:
-            tie = chessboard.robot_move(robot,robot2_side,screen)
-            time.sleep(0.5)
-            tie = chessboard.robot_move(robot,robot2_side,screen)
-
-            tie = chessboard.robot_move(robot,robot1_side,screen)
-            time.sleep(0.5)
-            tie = chessboard.robot_move(robot,robot1_side,screen)
+            th = threading.Thread(target=robot_moves_eve,args=(tie,))
+            th.setDaemon(True)
+            th.start()
+            time.sleep(2.3)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
-        
