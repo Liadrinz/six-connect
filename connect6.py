@@ -193,5 +193,5 @@ while ingame:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                time.sleep(0.2)
+                time.sleep(0.3)
                 running = False
