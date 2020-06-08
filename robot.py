@@ -10,13 +10,12 @@ class Robot:
         '''
         self.model = ABModel()
     
-    def set_param(self, side, depth=3):
+    def set_param(self, depth=3):
         '''
         设置机器人的参数
         - side: 机器人棋子颜色, 取值为'black'或'white'
         - depth: Alpha-Beta搜索的深度
         '''
-        self.side = side
         self.depth = depth
 
     def judge(self, board):
@@ -29,7 +28,7 @@ class Robot:
         '''
         return self.model.judge()
 
-    def query(self, board):
+    def query(self, board,side):
         '''
         查询在棋盘局面为board的情形下, 对于机器人而言最好的一步
         - 入参
@@ -37,8 +36,8 @@ class Robot:
         - 返回值
             - movement: 二元组, 表示下棋坐标, 返回None代表死局(和棋)
         '''
-        assert self.depth > 0 and self.side in ['black', 'white']
-        val = self.model.search(self.depth, self.side)
+        assert self.depth > 0 and side in ['black', 'white']
+        val = self.model.search(self.depth, side)
         if self.model.best_move is None:
             return np.random.randint(0, 19, size=2)
         if self.model.no_move:

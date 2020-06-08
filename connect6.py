@@ -9,7 +9,7 @@ GRID_WIDTH = WINDOW_WIDTH//20
 base_folder = os.path.dirname(__file__)
 img_folder = os.path.join(base_folder,'image')
 
-FPS = 60
+FPS = 30
 
 pygame.init()
 #设置窗口位置
@@ -42,6 +42,8 @@ while ingame:
     running = False
     player_side = ""
     robot_side = ""
+    robot1_side = "black"
+    robot2_side = "white"
     first_step = True
     while in_menu:
         clock.tick(FPS)
@@ -92,30 +94,39 @@ while ingame:
     if running == True:
         chessboard = Chessboard(WINDOW_WIDTH,WINDOW_HEIGHT)
         chessboard.draw_board(screen)
+        robot = Robot()
+        robot.start()
         if pve_chosed == True: 
-            robot = Robot()
-            robot.start()
-            robot.set_param(robot_side)
+            robot.set_param()
             if robot_side == "black":
-                robot_step = robot.query(robot.model.board)
+                robot_step = robot.query(robot.model.board,robot_side)
                 robot.make_move(robot_step,robot_side)
                 chessboard.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
+        else:
+            robot.set_param()
+            robot_step = robot.query(robot.model.board,robot1_side)
+            robot.make_move(robot_step,robot1_side)
+            chessboard.draw_coin(robot1_side,(robot_step[1],robot_step[0]),screen)
         pygame.display.update()
         
     step = 0
-    while running:
+    while running and pve_chosed:
         clock.tick(FPS)
         if robot.judge(robot.model.board)!=None:
             result = robot.judge(robot.model.board)
             chessboard.draw_text(screen,result,50,360,300)
             break
+        if step == 2:
+            chessboard.robot_move(robot,robot_side,screen)
+            chessboard.robot_move(robot,robot_side,screen)
+            step=0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 ingame = False
                 running = False
             elif event.type ==pygame.MOUSEBUTTONDOWN and first_step==True:
                 first_step = False
-                pygame.event.set_blocked(None)
+                pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
                 pos = event.pos
                 chessboard.make_move(pos,robot,step,player_side,screen)
                 chessboard.robot_move(robot,robot_side,screen)
@@ -125,25 +136,23 @@ while ingame:
                 pygame.event.set_blocked(None)
                 pos = event.pos
                 step = chessboard.make_move(pos,robot,step,player_side,screen)
-                    # if robot.judge(robot.model.board)!=None:
-                    #     result = robot.judge(robot.model.board)
-                    #     chessboard.draw_text(screen,result,2,300,300)
-                    #     break
-                if step == 2:
-                    chessboard.robot_move(robot,robot_side,screen)
-                    # if robot.judge(robot.model.board)!=None:
-                    #     result = robot.judge(robot.model.board)
-                    #     chessboard.draw_text(screen,result,2,300,300)
-                    #     break
-                    chessboard.robot_move(robot,robot_side,screen)
-                    # if robot.judge(robot.model.board)!=None:
-                    #     result = robot.judge(robot.model.board)
-                    #     chessboard.draw_text(screen,result,2,300,300)
-                    #     break
-                    step = 0
                 pygame.event.set_allowed(None)
-                
-
         
+    while running and pve_chosed == False:
+        clock.tick(FPS)
+        if robot.judge(robot.model.board)!=None:
+            result = robot.judge(robot.model.board)
+            chessboard.draw_text(screen,result,50,360,300)
+            break
+        chessboard.robot_move(robot,robot2_side,screen)
+        chessboard.robot_move(robot,robot2_side,screen)
+
+        chessboard.robot_move(robot,robot1_side,screen)
+        chessboard.robot_move(robot,robot1_side,screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                ingame = False
+                running = False
 
         
