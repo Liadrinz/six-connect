@@ -42,13 +42,13 @@ def robot_moves_eve():
     count = count+1
     lock.acquire()
     tie = chessboard.robot_move(robot,robot2_side,screen)
-    time.sleep(0.25)
+    # time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot2_side,screen)
-    time.sleep(0.25)
+    # time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot1_side,screen)
-    time.sleep(0.25)
+    # time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot1_side,screen)
-    time.sleep(0.25)
+    # time.sleep(0.25)
     lock.release()
     count = count-1
 
