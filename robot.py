@@ -10,7 +10,7 @@ class Robot:
         '''
         self.model = ABModel()
     
-    def set_param(self, side, depth=3):
+    def set_param(self, side, depth=1):
         '''
         设置机器人的参数
         - side: 机器人棋子颜色, 取值为'black'或'white'
