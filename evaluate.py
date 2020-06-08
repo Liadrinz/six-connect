@@ -3,8 +3,13 @@ import numpy as np
 from scipy import signal
 from values import cost
 
+def sigmoid(X):
+    return 1 / (1 + np.exp(-X))
+
 def F(x):
-    return 10 ** x * np.array(x != 0, dtype=np.int)
+    nonzero = np.array(x != 0, dtype=np.int)
+    ev = (10 ** np.abs(x)) * (x + 0.1 / np.abs(x + 0.1))
+    return nonzero * ev
 
 def valid(x, y):
     return x >= 0 and x < 19 and y >= 0 and y < 19
@@ -27,6 +32,26 @@ def trim_diagonal(i, j, x0, x1, y0, y1):
     else:
         y1 -= ((y1 - j) - (x1 - i))
     return x0, x1, y0, y1
+
+def evaluate(matrix):
+    h_connects = F(signal.convolve2d(matrix, 0.8 * np.ones([1, 6]), mode='same'))
+    v_connects = F(signal.convolve2d(matrix, 0.8 * np.ones([6, 1]), mode='same'))
+    d_connects = F(signal.convolve2d(matrix, 0.8 * np.eye(6), mode='same'))
+    r_connects = F(signal.convolve2d(matrix, 0.8 * np.rot90(np.eye(6)), mode='same'))
+    a_mat = h_connects + v_connects + d_connects + r_connects
+    legal_moves = np.array(a_mat != 0, dtype=np.int) * np.array(matrix == 0, dtype=np.int)
+    return np.sum(a_mat), np.array(np.where(legal_moves != 0)).T
+
+def judge(matrix):
+    h_connects = signal.convolve2d(matrix, np.ones([1, 6]), mode='same')
+    v_connects = signal.convolve2d(matrix, np.ones([6, 1]), mode='same')
+    d_connects = signal.convolve2d(matrix, np.eye(6), mode='same')
+    r_connects = signal.convolve2d(matrix, np.rot90(np.eye(6)), mode='same')
+    if (h_connects >= 6).any() or (v_connects >= 6).any() or (d_connects >= 6).any() or (r_connects >= 6).any():
+        return 'black'
+    if (h_connects <= -6).any() or (v_connects <= -6).any() or (d_connects <= -6).any() or (r_connects <= -6).any():
+        return 'white'
+    return None
 
 def handle_hv(i, j, x0, x1, y0, y1, matrix, original, handle, type):
     airs = []
@@ -214,24 +239,6 @@ def gen_move(matrix):
 #     traverse(matrix, handle)
 #     return score, gen_move(matrix)
 
-def evaluate(matrix):
-    h_connects = F(signal.convolve2d(matrix, np.ones([1, 6]), mode='same'))
-    v_connects = F(signal.convolve2d(matrix, np.ones([6, 1]), mode='same'))
-    d_connects = F(signal.convolve2d(matrix, np.eye(6), mode='same'))
-    r_connects = F(signal.convolve2d(matrix, np.rot90(np.eye(6)), mode='same'))
-    a_mat = h_connects + v_connects + d_connects + r_connects
-    legal_moves = np.array(a_mat != 0, dtype=np.int) * np.array(matrix == 0, dtype=np.int)
-    return np.sum(a_mat), np.array(np.where(legal_moves != 0)).T
-
-def judge(matrix):
-    h_connects = signal.convolve2d(matrix, np.ones([1, 6]), mode='same')
-    v_connects = signal.convolve2d(matrix, np.ones([6, 1]), mode='same')
-    d_connects = signal.convolve2d(matrix, np.eye(6), mode='same')
-    if (h_connects >= 6).any() or (v_connects >= 6).any() or (d_connects >= 6).any():
-        return 'black'
-    if (h_connects <= -6).any() or (v_connects <= -6).any() or (d_connects <= -6).any():
-        return 'white'
-    return None
 
 import time
 
