@@ -74,7 +74,7 @@ class Chessboard(object):
         return step
 
     def robot_move(self,robot,robot_side,screen):
-        robot_step = robot.query(robot.model.board)
+        robot_step = robot.query(robot.model.board,robot_side)
         robot.make_move(robot_step,robot_side)
         self.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
         pygame.display.update()
