@@ -42,13 +42,9 @@ def robot_moves_eve():
     count = count+1
     lock.acquire()
     tie = chessboard.robot_move(robot,robot2_side,screen)
-    time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot2_side,screen)
-    time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot1_side,screen)
-    time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot1_side,screen)
-    time.sleep(0.25)
     lock.release()
     count = count-1
 
@@ -62,6 +58,7 @@ while ingame:
     screen.blit(pve,(200,400))
     screen.blit(eve,(200,500))
     screen.blit(title,(180,40))
+    
 
     in_menu = True
     pve_chosed = False
@@ -196,4 +193,5 @@ while ingame:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                time.sleep(0.2)
                 running = False
