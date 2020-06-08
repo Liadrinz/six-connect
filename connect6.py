@@ -31,6 +31,7 @@ title = pygame.image.load(os.path.join(img_folder,'title.png')).convert()
 lock=threading.Lock()
 def robot_moves_pve():
     global tie
+    count = count +1
     pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
     tie = chessboard.robot_move(robot,robot_side,screen)
     tie = chessboard.robot_move(robot,robot_side,screen)
@@ -38,16 +39,19 @@ def robot_moves_pve():
 
 def robot_moves_eve():
     global tie
+    global count
+    count = count+1
     lock.acquire()
     tie = chessboard.robot_move(robot,robot2_side,screen)
-    time.sleep(0.5)
+    time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot2_side,screen)
-    time.sleep(0.5)
+    time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot1_side,screen)
-    time.sleep(0.5)
+    time.sleep(0.25)
     tie = chessboard.robot_move(robot,robot1_side,screen)
-    time.sleep(0.5)
+    time.sleep(0.25)
     lock.release()
+    count = count-1
 
 
 
@@ -69,6 +73,7 @@ while ingame:
     robot2_side = "white"
     first_step = True
     tie = False
+    count = 0
     gameover = False
     while in_menu:
         clock.tick(FPS)
@@ -185,11 +190,10 @@ while ingame:
                 chessboard.draw_text(screen,"黑棋胜！",50,360,300)
             else:
                 chessboard.draw_text(screen,"白棋胜！",50,360,300)
-        if gameover == False:
+        if gameover == False and count ==0:
             th = threading.Thread(target=robot_moves_eve,args=())
             th.setDaemon(True)
             th.start()
-            time.sleep(2.3)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
