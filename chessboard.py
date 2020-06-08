@@ -57,12 +57,13 @@ class Chessboard(object):
         return (x,y)
 
 
-    def draw_text(self,screen,text,size,x,y,color = "black"):
-        font = pygame.font.Font(pygame.font.get_default_font(),size)
+    def draw_text(self,screen,text,size,x,y,color = "red"):
+        font=pygame.font.SysFont('simsunnsimsun',size)
         text_serface = font.render(text,True,pygame.Color(color))
         text_rect = text_serface.get_rect()
         text_rect.midtop =(x,y)
         screen.blit(text_serface,text_rect)
+        pygame.display.update()
 
     def make_move(self,pos,robot,step,player_side,screen):
         grid = (int(round(pos[0] / (self.grid_width + .0))-1),int(round(pos[1] / (self.grid_width + .0))-1))
@@ -74,7 +75,11 @@ class Chessboard(object):
         return step
 
     def robot_move(self,robot,robot_side,screen):
-        robot_step = robot.query(robot.model.board,robot_side)
-        robot.make_move(robot_step,robot_side)
-        self.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
+        if robot.query(robot.model.board,robot_side) is not None:
+            robot_step = robot.query(robot.model.board,robot_side)
+            robot.make_move(robot_step,robot_side)
+            self.draw_coin(robot_side,(robot_step[1],robot_step[0]),screen)
+        else:
+            return True
         pygame.display.update()
+        return False
