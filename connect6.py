@@ -110,6 +110,7 @@ while ingame:
         pygame.display.update()
         
     step = 0
+    #人机对弈游戏循环
     while running and pve_chosed:
         clock.tick(FPS)
         if robot.judge(robot.model.board)!=None:
@@ -122,27 +123,30 @@ while ingame:
             step=0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                ingame = False
                 running = False
             elif event.type ==pygame.MOUSEBUTTONDOWN and first_step==True:
                 first_step = False
                 pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
                 pos = event.pos
-                chessboard.make_move(pos,robot,step,player_side,screen)
-                chessboard.robot_move(robot,robot_side,screen)
-                chessboard.robot_move(robot,robot_side,screen)
+                if GRID_WIDTH<=pos[0]<=WINDOW_WIDTH-GRID_WIDTH and GRID_WIDTH<=pos[1]<=WINDOW_HEIGHT-GRID_WIDTH:
+                    chessboard.make_move(pos,robot,step,player_side,screen)
+                    chessboard.robot_move(robot,robot_side,screen)
+                    chessboard.robot_move(robot,robot_side,screen)
                 pygame.event.set_allowed(None)
             elif event.type ==pygame.MOUSEBUTTONDOWN and step!=2:
-                pygame.event.set_blocked(None)
+                pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
                 pos = event.pos
-                step = chessboard.make_move(pos,robot,step,player_side,screen)
+                if GRID_WIDTH<=pos[0]<=WINDOW_WIDTH-GRID_WIDTH and GRID_WIDTH<=pos[1]<=WINDOW_HEIGHT-GRID_WIDTH:
+                    step = chessboard.make_move(pos,robot,step,player_side,screen)
                 pygame.event.set_allowed(None)
-        
+    #AI对弈游戏循环   
     while running and pve_chosed == False:
         clock.tick(FPS)
         if robot.judge(robot.model.board)!=None:
             result = robot.judge(robot.model.board)
             chessboard.draw_text(screen,result,50,360,300)
+            running = False
+
             break
         chessboard.robot_move(robot,robot2_side,screen)
         chessboard.robot_move(robot,robot2_side,screen)
@@ -152,7 +156,6 @@ while ingame:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                ingame = False
                 running = False
 
         
