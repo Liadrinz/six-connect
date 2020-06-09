@@ -1,7 +1,6 @@
 import re
 import numpy as np
 from scipy import signal
-from values import cost
 
 p = 1
 q = 0.8
