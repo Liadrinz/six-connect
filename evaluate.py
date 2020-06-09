@@ -3,19 +3,20 @@ import numpy as np
 from scipy import signal
 from values import cost
 
+p = 1
+q = 0.8
+N = 9
+
 def F(x):
     nonzero = np.array(x != 0, dtype=np.int)
-    ev = (9 ** np.abs(x + 0.1)) * (x + 0.1 / np.abs(x + 0.1))
+    ev = p * (N ** np.abs(x + 0.1)) * (x + 0.1 / np.abs(x + 0.1))
     return nonzero * ev
 
-def valid(x, y):
-    return x >= 0 and x < 19 and y >= 0 and y < 19
-
 def evaluate(matrix):
-    h_connects = F(signal.convolve2d(matrix, 0.8 * np.ones([1, 6]), mode='same', fillvalue=0))
-    v_connects = F(signal.convolve2d(matrix, 0.8 * np.ones([6, 1]), mode='same', fillvalue=0))
-    d_connects = F(signal.convolve2d(matrix, 0.8 * np.eye(6), mode='same', fillvalue=0))
-    r_connects = F(signal.convolve2d(matrix, 0.8 * np.rot90(np.eye(6)), mode='same', fillvalue=0))
+    h_connects = F(signal.convolve2d(matrix, q * np.ones([1, 6]), mode='same'))
+    v_connects = F(signal.convolve2d(matrix, q * np.ones([6, 1]), mode='same'))
+    d_connects = F(signal.convolve2d(matrix, q * np.eye(6), mode='same'))
+    r_connects = F(signal.convolve2d(matrix, q * np.rot90(np.eye(6)), mode='same'))
     a_mat = h_connects + v_connects + d_connects + r_connects
     legal_moves = np.array(a_mat != 0, dtype=np.int) * np.array(matrix == 0, dtype=np.int)
     return np.sum(a_mat), np.array(np.where(legal_moves != 0)).T
